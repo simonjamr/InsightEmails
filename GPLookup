@@ -1,18 +1,18 @@
 SELECT
-       C.[Client ID] AS ClientID
-   ,LEFT(c.Forename, 1) + LEFT(c.Surname, 1) AS ClientInitials
+   GP.Surname
+   ,GP.Initials
+   ,GP.GPPC
+   ,P.[Practice Name]
+   ,gp.PCG
+   ,gp.Status 
    ,GPS.SectorName AS GPSectorName
-   ,TE.EmailAddress
-FROM 
-       Client C
-       LEFT JOIN GP ON C.GPID = GP.GPID
-       LEFT JOIN refGPSector GPS ON GP.SectorID = GPS.SectorID
-       LEFT JOIN sectors S ON GPS.SectorName = S.SectorName
-       LEFT JOIN Servgrp SG ON S.SectorID = SG.SectorID
-       LEFT JOIN TeamEmail TE ON SG.[Service Code] = TE.TeamID
-WHERE
-       TE.isDischargeDayEmail = 1
-       AND SG.Description NOT LIKE '%SORT%'                                 --Is not SORT
-       AND SG.Description NOT LIKE '%Early Intervention%'                         --Is not Early Intervention Service
-       AND CHARINDEX('@',TE.EmailAddress) > 0          
-       AND C.[Client ID] = 2844
+FROM GP
+       LEFT JOIN  [General Medical Practice] AS P ON GP.GPPC = P.[Practice Code]
+       LEFT JOIN  refGPSector AS GPS ON GP.SectorID = GPS.SectorID
+WHERE gp.pcg = '03N' 
+       AND  gp.Status = 'A'
+ORDER BY
+       P.[Practice Name],
+       Surname,
+       Initials
+
